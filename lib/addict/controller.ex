@@ -45,7 +45,7 @@ defmodule Addict.AddictController do
               do: {:ok, conn, user}
 
      case result do
-       {:ok, conn, user} -> return_success(conn, user, Addict.Configs.post_login)
+       {:ok, conn, user} -> return_success(conn, auth_params, Addict.Configs.post_login)
        {:error, errors} -> return_error(conn, errors, Addict.Configs.post_login)
      end
   end
@@ -121,11 +121,11 @@ defmodule Addict.AddictController do
     |> render("reset_password.html", token: token, signature: signature, csrf_token: csrf_token)
   end
 
-  defp return_success(conn, user, custom_fn, status \\ 200) do
+  defp return_success(conn, params, custom_fn, status \\ 200) do
     conn
     |> put_status(status)
-    |> invoke_hook(custom_fn, :ok, user)
-    |> json(Addict.Presenter.strip_all(user))
+    |> invoke_hook(custom_fn, :ok, params)
+    |> json(Addict.Presenter.strip_all(params))
   end
 
   defp invoke_hook(conn, custom_fn, status, params) do
