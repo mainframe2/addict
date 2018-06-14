@@ -45,7 +45,7 @@ defmodule Addict.AddictController do
               do: {:ok, conn, user}
 
      case result do
-       {:ok, conn, user} -> return_success(conn, Map.put(:user, :redirect_url, auth_params["redirect_url"]), Addict.Configs.post_login)
+       {:ok, conn, user} -> return_success(conn, Map.put(user, "redirect_url", auth_params["redirect_url"]), Addict.Configs.post_login)
        {:error, errors} -> return_error(conn, errors, Addict.Configs.post_login)
      end
   end
