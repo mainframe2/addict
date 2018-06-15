@@ -5,7 +5,12 @@ defmodule Addict.Mailers.MailSender do
   require Logger
 
   def send_register(user_params) do
-    template = Addict.Configs.email_register_template || "<p>Thanks for registering <%= email %>!</p>"
+    template =
+    case Addict.Configs.email_register_template do
+      nil -> "<p>Thanks for registering <%= email %>!</p>"
+      {module, method} -> apply(module, method, [email])
+      text -> text
+    end
     subject = Addict.Configs.email_register_subject || "Welcome"
     user = user_params |> convert_to_list
     html_body = EEx.eval_string(template, user)
