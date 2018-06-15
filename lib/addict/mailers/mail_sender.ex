@@ -8,7 +8,7 @@ defmodule Addict.Mailers.MailSender do
     template =
     case Addict.Configs.email_register_template do
       nil -> "<p>Thanks for registering <%= email %>!</p>"
-      {module, method} -> apply(module, method, [email])
+      {module, method} -> apply(module, method, [user_params])
       text -> text
     end
     subject = Addict.Configs.email_register_subject || "Welcome"
