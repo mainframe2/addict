@@ -11,7 +11,7 @@ defmodule Addict.Configs do
     :post_reset_password,
     :post_recover_password,
     :extra_validation,
-    :extra_login_validation
+    :extra_login_validation,
     :mail_service,
     :from_email,
     :host,
