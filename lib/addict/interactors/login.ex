@@ -12,7 +12,7 @@ defmodule Addict.Interactors.Login do
 
     with {:ok, user} <- GetUserByEmail.call(email),
          {:ok} <- VerifyPassword.call(user, password),
-         {:ok, _} <- Addict.Helper.exec extra_login_validation, [user] do
+         {:ok, _} <- Addict.Helper.exec(extra_login_validation, [user]) do
     {:ok, user}
     else
       error -> error
