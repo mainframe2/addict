@@ -139,11 +139,22 @@ defmodule Addict.AddictController do
   end
 
   defp return_error(conn, errors, custom_fn) do
+    conn = conn
+    |> invoke_hook(custom_fn, :error, errors)
+    |> case do
+      {conn, additional_error} ->
+        errors =
+        errors
+        |> Map.merge(additional_error)
+        conn
+      conn -> conn
+    end
+
     errors = errors |> Enum.map(fn {key, value} ->
       %{message: "#{Macro.camelize(Atom.to_string(key))}: #{value}"}
     end)
+
     conn
-    |> invoke_hook(custom_fn, :error, errors)
     |> put_status(400)
     |> json(%{errors: errors})
   end
