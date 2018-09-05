@@ -1,5 +1,4 @@
 defmodule Addict.Interactors.ValidatePassword do
-
   @doc """
   Validates a password according to the defined strategies.
   For now, only the `:default` strategy exists: password must be at least 6 chars long.
@@ -44,7 +43,7 @@ defmodule Addict.Interactors.ValidatePassword do
 
   @uppercase_condition_regex ~r/[A-Z]+/
   @lowercase_condition_regex ~r/[a-z]+/
-  @number_condition_regex    ~r/d+/
+  @number_condition_regex    ~r/\d+/
   @special_characters_regex  ~r/[.,!?@#$%^&*()<>]+/
   @password_regex_validations [@uppercase_condition_regex, @lowercase_condition_regex, @number_condition_regex, @special_characters_regex]
 
@@ -53,19 +52,19 @@ defmodule Addict.Interactors.ValidatePassword do
   end
 
   defp validate(:frame_password, :uppercase, password) when is_bitstring(password) do
-    if Regex.match?(~r/[A-Z]+/, password), do: [], else: [{:password, {"must contain at least one uppercase letter", []}}]
+    if Regex.match?(@uppercase_condition_regex, password), do: [], else: [{:password, {"must contain at least one uppercase letter", []}}]
   end
 
   defp validate(:frame_password, :lowercase, password) when is_bitstring(password) do
-    if Regex.match?(~r/[a-z]+/, password), do: [], else: [{:password, {"must contain at least one lowercase letter", []}}]
+    if Regex.match?(@lowercase_condition_regex, password), do: [], else: [{:password, {"must contain at least one lowercase letter", []}}]
   end
 
   defp validate(:frame_password, :numbers, password) when is_bitstring(password) do
-    if Regex.match?(~r/d+/, password), do: [], else: [{:password, {"must contain at least one digit", []}}]
+    if Regex.match?(@number_condition_regex, password), do: [], else: [{:password, {"must contain at least one digit", []}}]
   end
 
   defp validate(:frame_password, :special_chars, password) when is_bitstring(password) do
-    if Regex.match?(~r/[.,!@#$%^&*()]+/, password), do: [], else: [{:password, {"must contain at least one special character", []}}]
+    if Regex.match?(@special_characters_regex, password), do: [], else: [{:password, {"must contain at least one special character", []}}]
   end
 
   defp validate(:frame_password, changeset) do
@@ -83,11 +82,10 @@ defmodule Addict.Interactors.ValidatePassword do
 
   defp validate_frame_password_complexity(password) do
     Enum.map(@password_regex_validations, fn regex -> Regex.match?(regex, password) end)
-    |> IO.inspect
     |> Enum.count(fn valid? -> valid? end)
     |> case do
-        num when num < 4 -> [{:password, {"password incomplex", []}}]
-        _                -> []
+        num when num < 3 -> [{:password, {"password incomplex", []}}]
+        num              -> []
       end
   end
 
