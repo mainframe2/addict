@@ -69,6 +69,11 @@ defmodule Addict.Interactors.ResetPassword do
     %Addict.PasswordUser{}
     |> Ecto.Changeset.cast(%{password: password}, ~w(password), [])
     |> ValidatePassword.call(password_strategies)
+    |> _format_response
   end
+
+  defp _format_response({:ok, _}=response), do: response
+  defp _format_response({:error, [password: {message, _}]}), do: {:error, [{:password, message}]}
+  defp _format_response({:error, error}), do: {:error, error}
 
 end
