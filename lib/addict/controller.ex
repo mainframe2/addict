@@ -116,9 +116,10 @@ defmodule Addict.AddictController do
     csrf_token = generate_csrf_token
     token = params["token"]
     signature = params["signature"]
+    setup = params["setup"] || false
     conn
     |> put_addict_layout
-    |> render("reset_password.html", token: token, signature: signature, csrf_token: csrf_token)
+    |> render("reset_password.html", token: token, signature: signature, csrf_token: csrf_token, setup: setup)
   end
 
   defp return_success(conn, params, custom_fn, status \\ 200) do
