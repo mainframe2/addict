@@ -20,7 +20,11 @@ defmodule Addict.Mailers.MailSender do
 
   def send_reset_token(email, path, host \\ Addict.Configs.host) do
     host = host || "http://localhost:4000"
-    template = Addict.Configs.email_reset_password_template || "<p>You've requested to reset your password. Click <a href='#{host}<%= path %>'>here</a> to proceed!</p>"
+    case Addict.Configs.email_reset_password_template do
+      nil -> "<p>You've requested to reset your password. Click <a href='#{host}<%= path %>'>here</a> to proceed!</p>"
+      {module, method} -> apply(module, method, [email, path, host])
+      text -> text
+    end
     subject = Addict.Configs.email_reset_password_subject || "Reset Password"
     params = %{"email" => email, "path" => path} |> convert_to_list
     html_body = EEx.eval_string(template, params)
