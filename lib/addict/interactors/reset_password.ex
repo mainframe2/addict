@@ -11,23 +11,27 @@ defmodule Addict.Interactors.ResetPassword do
     token     = params["token"]
     password  = params["password"]
     signature = params["signature"]
+    first_name = params["first_name"]
+    last_name  = params["last_name"]
 
-    with {:ok} <- validate_params(token, password, signature),
+    with {:ok} <- validate_params(token, password, signature, first_name, last_name),
          {:ok, true} <- Addict.Crypto.verify(token, signature),
          {:ok, generation_time, user_id} <- parse_token(token),
          {:ok} <- validate_generation_time(generation_time),
          {:ok, _} <- validate_password(password),
          {:ok, user} <- GetUserById.call(user_id),
-         {:ok, _} <- UpdateUserPassword.call(user, password),
+         {:ok, _} <- update_password(user, password, first_name, last_name),
      do: {:ok, user}
   end
 
-  defp validate_params(token, password, signature) do
-    if token == nil || password == nil || signature == nil do
+  defp validate_params(token, password, signature, first_name, last_name) do
+    if token == nil || password == nil || signature == nil || first_name == "" || last_name == "" do
       Logger.debug("Invalid params for password reset")
       Logger.debug("token: #{token}")
       Logger.debug("password: #{password}")
       Logger.debug("signature: #{signature}")
+      Logger.debug("first_name: #{first_name}")
+      Logger.debug("last_name: #{last_name}")
       {:error, [{:params, "Invalid params"}]}
     else
       {:ok}
@@ -71,6 +75,12 @@ defmodule Addict.Interactors.ResetPassword do
     |> ValidatePassword.call(password_strategies)
     |> _format_response
   end
+
+  defp update_password(user, password, nil, nil),
+    do: UpdateUserPassword.call(user, password)
+
+  defp update_password(user, password, first_name, last_name),
+    do: UpdateUserPassword.call(user, password, first_name, last_name)
 
   defp _format_response({:ok, _}=response), do: response
   defp _format_response({:error, [password: {message, _}]}), do: {:error, [{:password, message}]}
