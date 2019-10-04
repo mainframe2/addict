@@ -1,11 +1,12 @@
 defmodule Addict.Interactors.Login do
-  alias Addict.Interactors.{GetUserByEmail, VerifyPassword}
-
-  @doc """
+  @moduledoc """
   Verifies if the `password` is correct for the provided `email`
 
   Returns `{:ok, user}` or `{:error, [errors]}`
   """
+
+  alias Addict.Interactors.{GetUserByEmail, VerifyPassword}
+
   def call(%{"email" => email, "password" => password}, configs \\ Addict.Configs) do
 
     extra_login_validation = configs.extra_login_validation || fn (a) -> {:ok, a} end

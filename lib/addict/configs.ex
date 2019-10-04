@@ -1,4 +1,5 @@
 defmodule Addict.Configs do
+  @moduledoc false
   [
     :secret_key,
     :generate_csrf_token,
@@ -30,7 +31,6 @@ defmodule Addict.Configs do
        end)
 
   def password_hasher do
-    Application.get_env(:addict, :password_hasher, Comeonin.Pbkdf2)
+    Application.get_env(:addict, :password_hasher, Pbkdf2)
   end
-
 end

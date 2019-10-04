@@ -1,5 +1,5 @@
 defmodule Addict.Interactors.InsertUser do
-  @doc """
+  @moduledoc """
   Inserts the `schema` populated with `user_params` to the `repo`.
 
   Returns `{:ok, user}` or `{:error, error_message}`

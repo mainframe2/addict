@@ -2,6 +2,11 @@ defmodule ControllerTest do
   use ExUnit.Case, async: false
   use Addict.RepoSetup
   use Plug.Test
+
+  alias Addict.Interactors.GeneratePasswordResetLink
+  alias Addict.Interactors.GetUserByEmail
+  alias Addict.Interactors.Register
+
   import Addict.SessionSetup, only: [with_session: 1]
 
   @opts TestAddictRouter.init([])
@@ -33,7 +38,7 @@ defmodule ControllerTest do
       "password" => "my passphrase"
     }
 
-    Addict.Interactors.Register.call(request_params)
+    Register.call(request_params)
 
     conn = conn(:post, "/login", request_params)
            |> with_session
@@ -56,10 +61,10 @@ defmodule ControllerTest do
       "password" => "my passphrase"
     }
 
-    {:ok, user} = Addict.Interactors.Register.call(register_params)
+    {:ok, user} = Register.call(register_params)
     original_encrypted_password = user.encrypted_password
 
-    {:ok, reset_path} = Addict.Interactors.GeneratePasswordResetLink.call(user.id)
+    {:ok, reset_path} = GeneratePasswordResetLink.call(user.id)
 
     [token, signature] = reset_path |> String.split("?") |> Enum.at(1) |> String.split("&")
     token = token |> String.split("=") |> Enum.at(1)
@@ -74,7 +79,7 @@ defmodule ControllerTest do
     conn(:post, "/reset_password", reset_params)
     |> TestAddictRouter.call(@opts)
 
-    {:ok, user} = Addict.Interactors.GetUserByEmail.call(user.email)
+    {:ok, user} = GetUserByEmail.call(user.email)
     assert original_encrypted_password != user.encrypted_password
 
   end

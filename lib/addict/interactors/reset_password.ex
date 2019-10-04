@@ -1,12 +1,13 @@
 defmodule Addict.Interactors.ResetPassword do
-  alias Addict.Interactors.{GetUserById, UpdateUserPassword, ValidatePassword}
-  require Logger
-
-  @doc """
+  @moduledoc """
   Executes the password reset flow: parameters validation, password hash generation, user updating.
 
   Returns `{:ok, user}` or `{:error, [errors]}`
   """
+
+  alias Addict.Interactors.{GetUserById, UpdateUserPassword, ValidatePassword}
+  require Logger
+
   def call(params) do
     token     = params["token"]
     password  = params["password"]
@@ -71,7 +72,7 @@ defmodule Addict.Interactors.ResetPassword do
 
   defp validate_password(password, password_strategies \\ Addict.Configs.password_strategies) do
     %Addict.PasswordUser{}
-    |> Ecto.Changeset.cast(%{password: password}, ~w(password), [])
+    |> Ecto.Changeset.cast(%{password: password}, ~w(password)a, [])
     |> ValidatePassword.call(password_strategies)
     |> _format_response
   end
@@ -82,7 +83,7 @@ defmodule Addict.Interactors.ResetPassword do
   defp update_password(user, password, first_name, last_name),
     do: UpdateUserPassword.call(user, password, first_name, last_name)
 
-  defp _format_response({:ok, _}=response), do: response
+  defp _format_response({:ok, _} = response), do: response
   defp _format_response({:error, [password: {message, _}]}), do: {:error, [{:password, message}]}
   defp _format_response({:error, error}), do: {:error, error}
 

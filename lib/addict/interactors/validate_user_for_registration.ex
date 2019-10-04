@@ -1,4 +1,6 @@
 defmodule Addict.PasswordUser do
+  @moduledoc false
+
   use Ecto.Schema
 
   schema "users" do
@@ -8,7 +10,7 @@ defmodule Addict.PasswordUser do
 end
 
 defmodule Addict.Interactors.ValidateUserForRegistration do
-@doc """
+@moduledoc """
 Validates if the user is valid for insertion.
 Checks if `password` is valid and if `email` is well formatted and unique.
 

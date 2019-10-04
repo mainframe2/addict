@@ -16,5 +16,4 @@ Normalized structure presentation
     associations = schema.__schema__(:associations)
     Map.drop model, associations ++ [:__struct__, :__meta__, :encrypted_password]
   end
-
 end

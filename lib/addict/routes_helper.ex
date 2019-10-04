@@ -1,4 +1,6 @@
 defmodule Addict.RoutesHelper do
+  @moduledoc false
+
   defmacro __using__(_) do
     quote do
       import Addict.RoutesHelper

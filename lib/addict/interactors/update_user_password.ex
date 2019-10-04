@@ -1,11 +1,12 @@
 defmodule Addict.Interactors.UpdateUserPassword do
-  import Ecto.Changeset
-  alias Addict.Interactors.GenerateEncryptedPassword
-  @doc """
+  @moduledoc """
   Updates the user `encrypted_password`
 
   Returns `{:ok, user}` or `{:error, [errors]}`
   """
+
+  import Ecto.Changeset
+  alias Addict.Interactors.GenerateEncryptedPassword
 
   def call(user, password, first_name, last_name, repo \\ Addict.Configs.repo) do
     user

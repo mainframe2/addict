@@ -1,3 +1,5 @@
+alias Ecto.Adapters.SQL.Sandbox
+
 Logger.configure(level: :info)
 ExUnit.start
 
@@ -11,8 +13,8 @@ defmodule Addict.RepoSetup do
   use ExUnit.CaseTemplate
 
   setup do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(TestAddictRepo)
-    Ecto.Adapters.SQL.Sandbox.mode(TestAddictRepo, {:shared, self()})
+    :ok = Sandbox.checkout(TestAddictRepo)
+    Sandbox.mode(TestAddictRepo, {:shared, self()})
     :ok
   end
 end
@@ -28,11 +30,9 @@ defmodule Addict.SessionSetup do
   end
 end
 
-
 _ = Ecto.Adapters.Postgres.storage_down(TestAddictRepo.config)
 _ = Ecto.Adapters.Postgres.storage_up(TestAddictRepo.config)
 
 {:ok, _pid} = TestAddictRepo.start_link
 _ = Ecto.Migrator.up(TestAddictRepo, 0, TestAddictMigrations, log: false)
 Process.flag(:trap_exit, true)
-

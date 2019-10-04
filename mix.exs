@@ -5,7 +5,7 @@ defmodule Addict.Mixfile do
     [
       app: :addict,
       version: "0.3.0",
-      elixir: "~> 1.2",
+      elixir: "~> 1.9",
       description: description(),
       package: package(),
       docs: &docs/0,
@@ -14,7 +14,7 @@ defmodule Addict.Mixfile do
   end
 
   def application do
-    [applications: applications(Mix.env)]
+    [applications: applications(Mix.env())]
   end
 
   defp applications(:test) do
@@ -22,29 +22,33 @@ defmodule Addict.Mixfile do
   end
 
   defp applications(_) do
-    [:phoenix, :ecto, :comeonin, :logger, :crypto]
+    [:phoenix, :ecto_sql, :logger, :crypto]
   end
 
   defp deps do
     [
-      {:cowboy, "~> 1.0"},
-      {:phoenix, "~> 1.1"},
-      {:ecto, "~> 2.0"},
-      {:comeonin, "~> 2.1" },
-      {:mock, "~> 0.1.3", only: :test},
-      {:postgrex, "~> 0.11", only: :test},
-      {:earmark, "~> 0.2", only: :dev},
-      {:ex_doc, "~> 0.11", only: :dev}
+      {:plug_cowboy, "~> 2.0"},
+      {:plug, "~> 1.7"},
+      {:phoenix, "~> 1.4"},
+      {:jason, "~> 1.0"},
+      {:ecto_sql, "~> 3.2"},
+      {:bcrypt_elixir, "~> 2.0"},
+      {:pbkdf2_elixir, "~> 1.0"},
+      {:mock, "~> 0.3.3", only: :test},
+      {:postgrex, ">= 0.0.0", only: :test},
+      {:earmark, "~> 1.4", only: :dev},
+      {:ex_doc, "~> 0.21", only: :dev},
+      {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false}
     ]
   end
 
   defp package do
     [
-         files: ["lib", "boilerplate", "docs", "mix.exs", "README*", "LICENSE*", "configs*"],
-         contributors: ["Nizar Venturini"],
-         maintainers: ["Nizar Venturini"],
-         licenses: ["MIT"],
-         links: %{"GitHub" => "https://github.com/trenpixster/addict"}
+      files: ["lib", "boilerplate", "docs", "mix.exs", "README*", "LICENSE*", "configs*"],
+      contributors: ["Nizar Venturini"],
+      maintainers: ["Nizar Venturini"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/trenpixster/addict"}
     ]
   end
 
@@ -57,8 +61,6 @@ defmodule Addict.Mixfile do
 
   defp docs do
     {ref, 0} = System.cmd("git", ["rev-parse", "--verify", "--quiet", "HEAD"])
-    [source_ref: ref,
-     main: "readme",
-     extras: ["README.md","configs.md"]]
-    end
+    [source_ref: ref, main: "readme", extras: ["README.md", "configs.md"]]
+  end
 end

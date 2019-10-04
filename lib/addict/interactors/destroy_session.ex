@@ -1,10 +1,11 @@
 defmodule Addict.Interactors.DestroySession do
-  import Plug.Conn
-  @doc """
+  @moduledoc """
   Removes `:current_user` from the session in `conn`
 
   Returns `{:ok, conn}`
   """
+
+  import Plug.Conn
 
   def call(conn) do
     conn = conn
