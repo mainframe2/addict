@@ -4,18 +4,18 @@ defmodule Addict.PasswordUser do
   use Ecto.Schema
 
   schema "users" do
-    field :password, :string
-    field :email, :string
+    field(:password, :string)
+    field(:email, :string)
   end
 end
 
 defmodule Addict.Interactors.ValidateUserForRegistration do
-@moduledoc """
-Validates if the user is valid for insertion.
-Checks if `password` is valid and if `email` is well formatted and unique.
+  @moduledoc """
+  Validates if the user is valid for insertion.
+  Checks if `password` is valid and if `email` is well formatted and unique.
 
-Returns `{:ok, []}` or `{:error, [errors]}`
-"""
+  Returns `{:ok, []}` or `{:error, [errors]}`
+  """
   import Ecto.Changeset
   alias Addict.Interactors.ValidatePassword
 
@@ -34,7 +34,7 @@ Returns `{:ok, []}` or `{:error, [errors]}`
   end
 
   defp format_response(errors) do
-    errors = Enum.map errors, fn ({key, {value, _}}) -> {key, value} end
+    errors = Enum.map(errors, fn {key, {value, _}} -> {key, value} end)
     {:error, errors}
   end
 
@@ -51,6 +51,6 @@ Returns `{:ok, []}` or `{:error, [errors]}`
   end
 
   defp do_validate_password({:error, messages}, existing_errors) do
-    Enum.concat messages, existing_errors
+    Enum.concat(messages, existing_errors)
   end
 end

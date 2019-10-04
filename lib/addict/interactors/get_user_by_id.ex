@@ -4,7 +4,7 @@ defmodule Addict.Interactors.GetUserById do
   Returns `{:ok, user}` or `{:error, [user_id: "Unable to find user"]}`
   """
 
-  def call(id, schema \\ Addict.Configs.user_schema, repo \\ Addict.Configs.repo) do
+  def call(id, schema \\ Addict.Configs.user_schema(), repo \\ Addict.Configs.repo()) do
     repo.get_by(schema, id: id) |> process_response
   end
 
@@ -15,5 +15,4 @@ defmodule Addict.Interactors.GetUserById do
   defp process_response(user) do
     {:ok, user}
   end
-
 end

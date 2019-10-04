@@ -21,7 +21,7 @@ defmodule ControllerTest do
       "password" => "my password"
     }
 
-    conn = with_session conn(:post, "/register", request_params)
+    conn = with_session(conn(:post, "/register", request_params))
     conn = TestAddictRouter.call(conn, @opts)
 
     user = conn |> Plug.Conn.get_session(:current_user)
@@ -40,15 +40,15 @@ defmodule ControllerTest do
 
     Register.call(request_params)
 
-    conn = conn(:post, "/login", request_params)
-           |> with_session
-           |> TestAddictRouter.call(@opts)
+    conn =
+      conn(:post, "/login", request_params)
+      |> with_session
+      |> TestAddictRouter.call(@opts)
 
     user = conn |> Plug.Conn.get_session(:current_user)
 
     assert conn.status == 200
     assert user[:email] == "john.doe@example.com"
-
   end
 
   test "it resets a password" do
@@ -81,17 +81,17 @@ defmodule ControllerTest do
 
     {:ok, user} = GetUserByEmail.call(user.email)
     assert original_encrypted_password != user.encrypted_password
-
   end
 
   test "it logs out a user" do
     Application.put_env(:addict, :user_schema, TestAddictSchema)
     Application.put_env(:addict, :repo, TestAddictRepo)
 
-    conn = conn(:delete, "/logout", nil)
-           |> with_session
-           |> Plug.Conn.put_session(:current_user, %{email: "john.doe@example.com"})
-           |> TestAddictRouter.call(@opts)
+    conn =
+      conn(:delete, "/logout", nil)
+      |> with_session
+      |> Plug.Conn.put_session(:current_user, %{email: "john.doe@example.com"})
+      |> TestAddictRouter.call(@opts)
 
     user = conn |> Plug.Conn.get_session(:current_user)
 

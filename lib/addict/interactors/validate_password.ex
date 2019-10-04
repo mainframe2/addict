@@ -6,11 +6,11 @@ defmodule Addict.Interactors.ValidatePassword do
   Returns `{:ok, []}` or `{:error, [errors]}`
   """
 
-  @password_length            8
+  @password_length 8
   @uppercase_condition_regex ~r/[A-Z]+/
   @lowercase_condition_regex ~r/[a-z]+/
-  @number_condition_regex    ~r/\d+/
-  @special_characters_regex  ~r/[.,!?@#$%^&*()<>]+/
+  @number_condition_regex ~r/\d+/
+  @special_characters_regex ~r/[.,!?@#$%^&*()<>]+/
   @password_regex_validations [
     @uppercase_condition_regex,
     @lowercase_condition_regex,
@@ -30,7 +30,7 @@ defmodule Addict.Interactors.ValidatePassword do
       end
 
     strategies
-    |> Enum.reduce(changeset, fn (strategy, acc) ->
+    |> Enum.reduce(changeset, fn strategy, acc ->
       validate(strategy, acc)
     end)
     |> format_response
@@ -79,20 +79,20 @@ defmodule Addict.Interactors.ValidatePassword do
   end
 
   defp validate(:default, changeset) do
-    Ecto.Changeset.validate_change(changeset, :password, fn (_field, value) ->
+    Ecto.Changeset.validate_change(changeset, :password, fn _field, value ->
       validate(:default, value)
     end).errors
   end
 
   defp validate(:frame_password, changeset) do
-    Ecto.Changeset.validate_change(changeset, :password, fn (_field, value) ->
+    Ecto.Changeset.validate_change(changeset, :password, fn _field, value ->
       value |> validate_frame_password
     end).errors
   end
 
   defp validate_frame_password(password) when is_bitstring(password) do
     case validate(:frame_password, :length, password) do
-      []      -> password |> validate_frame_password_complexity
+      [] -> password |> validate_frame_password_complexity
       [error] -> [error]
     end
   end
@@ -101,8 +101,11 @@ defmodule Addict.Interactors.ValidatePassword do
     Enum.map(@password_regex_validations, fn regex -> Regex.match?(regex, password) end)
     |> Enum.count(fn valid? -> valid? end)
     |> case do
-        num when num < 3 -> [{:password, {"must contain at least one uppercase, lowercase letter, number and special character", []}}]
-        _                -> []
-      end
+      num when num < 3 ->
+        [{:password, {"must contain at least one uppercase, lowercase letter, number and special character", []}}]
+
+      _ ->
+        []
+    end
   end
 end

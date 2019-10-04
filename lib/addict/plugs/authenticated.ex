@@ -20,7 +20,8 @@ defmodule Addict.Plugs.Authenticated do
 
   def call(conn, _) do
     conn = fetch_session(conn)
-    not_logged_in_url = Addict.Configs.not_logged_in_url || "/login"
+    not_logged_in_url = Addict.Configs.not_logged_in_url() || "/login"
+
     if is_logged_in(get_session(conn, :current_user)) do
       assign(conn, :current_user, get_session(conn, :current_user))
     else
@@ -31,7 +32,7 @@ defmodule Addict.Plugs.Authenticated do
   def is_logged_in(user_session) do
     case user_session do
       nil -> false
-      _   -> true
+      _ -> true
     end
   end
 end

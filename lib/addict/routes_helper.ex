@@ -18,29 +18,31 @@ defmodule Addict.RoutesHelper do
 
     for {route, methods} <- routes do
       route_options = options_for_route(route, options[route])
+
       for method <- methods do
         quote do
           unquote(method)(
-          unquote(route_options[:path]),
-          unquote(route_options[:controller]),
-          unquote(route_options[:action]),
-          as: unquote(route_options[:as]))
+            unquote(route_options[:path]),
+            unquote(route_options[:controller]),
+            unquote(route_options[:action]),
+            as: unquote(route_options[:as])
+          )
         end
       end
     end
   end
 
   defp options_for_route(route, options) when is_list(options) do
-    path       = route_path(route, options[:path])
+    path = route_path(route, options[:path])
     controller = options[:controller] || Addict.AddictController
-    action     = options[:action] || route
-    as         = route
+    action = options[:action] || route
+    as = route
 
     %{path: path, controller: controller, action: action, as: as}
   end
 
   defp options_for_route(route, path) do
-    options_for_route(route, [path: route_path(route, path)])
+    options_for_route(route, path: route_path(route, path))
   end
 
   defp route_path(route, path) do

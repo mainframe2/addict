@@ -23,13 +23,15 @@ defmodule Addict.AddictController do
   """
   def register(%{method: "POST"} = conn, user_params) do
     user_params = parse(user_params)
-    result = with {:ok, user} <- Register.call(user_params),
-                  {:ok, conn} <- CreateSession.call(conn, user),
-              do: {:ok, conn, user}
+
+    result =
+      with {:ok, user} <- Register.call(user_params),
+           {:ok, conn} <- CreateSession.call(conn, user),
+           do: {:ok, conn, user}
 
     case result do
-      {:ok, conn, user} -> return_success(conn, user, Addict.Configs.post_register, 201)
-      {:error, errors} -> return_error(conn, errors, Addict.Configs.post_register)
+      {:ok, conn, user} -> return_success(conn, user, Addict.Configs.post_register(), 201)
+      {:error, errors} -> return_error(conn, errors, Addict.Configs.post_register())
     end
   end
 
@@ -38,6 +40,7 @@ defmodule Addict.AddictController do
   """
   def register(%{method: "GET"} = conn, _) do
     csrf_token = generate_csrf_token()
+
     conn
     |> put_addict_layout
     |> render("register.html", csrf_token: csrf_token)
@@ -50,14 +53,19 @@ defmodule Addict.AddictController do
   """
   def login(%{method: "POST"} = conn, auth_params) do
     auth_params = parse(auth_params)
-    result = with {:ok, user} <- Login.call(auth_params),
-                  {:ok, conn} <- CreateSession.call(conn, user),
-              do: {:ok, conn, user}
 
-     case result do
-       {:ok, conn, user} -> return_success(conn, Map.put(user, :redirect_url, auth_params["redirect_url"]), Addict.Configs.post_login)
-       {:error, errors} -> return_error(conn, errors, Addict.Configs.post_login)
-     end
+    result =
+      with {:ok, user} <- Login.call(auth_params),
+           {:ok, conn} <- CreateSession.call(conn, user),
+           do: {:ok, conn, user}
+
+    case result do
+      {:ok, conn, user} ->
+        return_success(conn, Map.put(user, :redirect_url, auth_params["redirect_url"]), Addict.Configs.post_login())
+
+      {:error, errors} ->
+        return_error(conn, errors, Addict.Configs.post_login())
+    end
   end
 
   @doc """
@@ -65,6 +73,7 @@ defmodule Addict.AddictController do
   """
   def login(%{method: "GET"} = conn, _) do
     csrf_token = generate_csrf_token()
+
     conn
     |> put_addict_layout
     |> render("login.html", csrf_token: csrf_token)
@@ -76,10 +85,10 @@ defmodule Addict.AddictController do
   No required params, it removes the session of the logged in user.
   """
   def logout(%{method: "DELETE"} = conn, _) do
-     case DestroySession.call(conn) do
-       {:ok, conn} -> return_success(conn, %{}, Addict.Configs.post_logout)
-       {:error, errors} -> return_error(conn, errors, Addict.Configs.post_logout)
-     end
+    case DestroySession.call(conn) do
+      {:ok, conn} -> return_success(conn, %{}, Addict.Configs.post_logout())
+      {:error, errors} -> return_error(conn, errors, Addict.Configs.post_logout())
+    end
   end
 
   @doc """
@@ -90,9 +99,10 @@ defmodule Addict.AddictController do
   def recover_password(%{method: "POST"} = conn, user_params) do
     user_params = parse(user_params)
     email = user_params["email"]
+
     case SendResetPasswordEmail.call(email) do
-      {:ok, _} -> return_success(conn, %{}, Addict.Configs.post_recover_password)
-      {:error, errors} -> return_error(conn, errors, Addict.Configs.post_recover_password)
+      {:ok, _} -> return_success(conn, %{}, Addict.Configs.post_recover_password())
+      {:error, errors} -> return_error(conn, errors, Addict.Configs.post_recover_password())
     end
   end
 
@@ -101,6 +111,7 @@ defmodule Addict.AddictController do
   """
   def recover_password(%{method: "GET"} = conn, _) do
     csrf_token = generate_csrf_token()
+
     conn
     |> put_addict_layout
     |> render("recover_password.html", csrf_token: csrf_token)
@@ -113,9 +124,10 @@ defmodule Addict.AddictController do
   """
   def reset_password(%{method: "POST"} = conn, params) do
     params = parse(params)
+
     case ResetPassword.call(params) do
-      {:ok, _} -> return_success(conn, %{}, Addict.Configs.post_reset_password)
-      {:error, errors} -> return_error(conn, errors, Addict.Configs.post_reset_password)
+      {:ok, _} -> return_success(conn, %{}, Addict.Configs.post_reset_password())
+      {:error, errors} -> return_error(conn, errors, Addict.Configs.post_reset_password())
     end
   end
 
@@ -127,6 +139,7 @@ defmodule Addict.AddictController do
     token = params["token"]
     signature = params["signature"]
     setup = params["setup"] || false
+
     conn
     |> put_addict_layout
     |> render("reset_password.html", token: token, signature: signature, csrf_token: csrf_token, setup: setup)
@@ -140,19 +153,23 @@ defmodule Addict.AddictController do
   end
 
   defp invoke_hook(conn, custom_fn, status, params) do
-    f = case custom_fn do
-      {module, method} -> &apply(module, method, [&1, &2, &3])
-      nil              -> fn(a, _, _) -> a end
-      fun              -> fun
-    end
+    f =
+      case custom_fn do
+        {module, method} -> &apply(module, method, [&1, &2, &3])
+        nil -> fn a, _, _ -> a end
+        fun -> fun
+      end
 
     f.(conn, status, params)
   end
 
   defp return_error(conn, errors, custom_fn) do
-    errors = errors |> Enum.map(fn {key, value} ->
-      %{message: "#{Macro.camelize(Atom.to_string(key))}: #{value}"}
-    end)
+    errors =
+      errors
+      |> Enum.map(fn {key, value} ->
+        %{message: "#{Macro.camelize(Atom.to_string(key))}: #{value}"}
+      end)
+
     conn
     |> invoke_hook(custom_fn, :error, errors)
     |> put_status(400)
@@ -165,8 +182,8 @@ defmodule Addict.AddictController do
   end
 
   defp generate_csrf_token do
-    if Addict.Configs.generate_csrf_token != nil do
-      Addict.Helper.exec Addict.Configs.generate_csrf_token, []
+    if Addict.Configs.generate_csrf_token() != nil do
+      Addict.Helper.exec(Addict.Configs.generate_csrf_token(), [])
     else
       ""
     end
@@ -181,9 +198,9 @@ defmodule Addict.AddictController do
   end
 
   defp schema_name_string do
-    to_string(Addict.Configs.user_schema)
+    to_string(Addict.Configs.user_schema())
     |> String.split(".")
     |> Enum.at(-1)
-    |> String.downcase
+    |> String.downcase()
   end
 end

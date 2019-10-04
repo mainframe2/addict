@@ -1,7 +1,8 @@
 defmodule TestAddictDrugsSchema do
   use Ecto.Schema
+
   schema "drugs" do
-    field :name, :string
+    field(:name, :string)
   end
 end
 
@@ -9,10 +10,10 @@ defmodule TestAddictUserAssociationsSchema do
   use Ecto.Schema
 
   schema "users" do
-    field :name, :string
-    field :email, :string
-    field :encrypted_password, :string
-    has_many :drugs, TestAddictDrugsSchema
+    field(:name, :string)
+    field(:email, :string)
+    field(:encrypted_password, :string)
+    has_many(:drugs, TestAddictDrugsSchema)
   end
 end
 

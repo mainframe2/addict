@@ -6,6 +6,6 @@ defmodule Addict.Interactors.GenerateEncryptedPassword do
   """
 
   def call(password) do
-    Addict.Configs.password_hasher.hash_pwd_salt(password)
+    Addict.Configs.password_hasher().hash_pwd_salt(password)
   end
 end

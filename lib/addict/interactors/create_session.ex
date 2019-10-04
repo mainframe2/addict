@@ -7,10 +7,12 @@ defmodule Addict.Interactors.CreateSession do
 
   import Plug.Conn
 
-  def call(conn, user, schema \\ Addict.Configs.user_schema) do
-    conn = conn
-    |> fetch_session
-    |> put_session(:current_user, Addict.Presenter.strip_all(user, schema))
+  def call(conn, user, schema \\ Addict.Configs.user_schema()) do
+    conn =
+      conn
+      |> fetch_session
+      |> put_session(:current_user, Addict.Presenter.strip_all(user, schema))
+
     {:ok, conn}
   end
 end

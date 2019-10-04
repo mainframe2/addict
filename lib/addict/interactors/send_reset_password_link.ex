@@ -14,11 +14,13 @@ defmodule Addict.Interactors.SendResetPasswordEmail do
     {result, user} = GetUserByEmail.call(email)
 
     case result do
-      :error -> return_false_positive(email)
-      :ok    -> with  {:ok, path} <- GeneratePasswordResetLink.call(user.id, configs.secret_key),
-                      {:ok, _} <- MailSender.send_reset_token(email, path),
-                  do: {:ok, user}
+      :error ->
+        return_false_positive(email)
 
+      :ok ->
+        with {:ok, path} <- GeneratePasswordResetLink.call(user.id, configs.secret_key),
+             {:ok, _} <- MailSender.send_reset_token(email, path),
+             do: {:ok, user}
     end
   end
 

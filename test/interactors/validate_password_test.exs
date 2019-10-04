@@ -6,8 +6,8 @@ defmodule ValidatePasswordTest do
     use Ecto.Schema
 
     schema "users" do
-      field :password, :string
-      field :email, :string
+      field(:password, :string)
+      field(:email, :string)
     end
   end
 

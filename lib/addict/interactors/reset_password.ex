@@ -9,11 +9,11 @@ defmodule Addict.Interactors.ResetPassword do
   require Logger
 
   def call(params) do
-    token     = params["token"]
-    password  = params["password"]
+    token = params["token"]
+    password = params["password"]
     signature = params["signature"]
     first_name = params["first_name"]
-    last_name  = params["last_name"]
+    last_name = params["last_name"]
 
     with {:ok} <- validate_params(token, password, signature, first_name, last_name),
          {:ok, true} <- Addict.Crypto.verify(token, signature),
@@ -22,7 +22,7 @@ defmodule Addict.Interactors.ResetPassword do
          {:ok, _} <- validate_password(password),
          {:ok, user} <- GetUserById.call(user_id),
          {:ok, _} <- update_password(user, password, first_name, last_name),
-     do: {:ok, user}
+         do: {:ok, user}
   end
 
   defp validate_params(token, password, signature, first_name, last_name) do
@@ -43,22 +43,24 @@ defmodule Addict.Interactors.ResetPassword do
     [generation_time, user_id] = Base.decode16!(token) |> String.split(",")
 
     id =
-    user_id
-    |> is_integer()
-    |> case do
-      true -> Integer.to_string(user_id)
-      false -> user_id
-    end
+      user_id
+      |> is_integer()
+      |> case do
+        true -> Integer.to_string(user_id)
+        false -> user_id
+      end
 
     {:ok, String.to_integer(generation_time), id}
   end
 
   defp validate_generation_time(generation_time) do
-    time_to_expiry = if Addict.Configs.password_reset_token_time_to_expiry != nil do
-      Addict.Configs.password_reset_token_time_to_expiry
-    else
-      86_400
-    end
+    time_to_expiry =
+      if Addict.Configs.password_reset_token_time_to_expiry() != nil do
+        Addict.Configs.password_reset_token_time_to_expiry()
+      else
+        86_400
+      end
+
     do_validate_generation_time(:erlang.system_time(:seconds) - generation_time <= time_to_expiry)
   end
 
@@ -70,7 +72,7 @@ defmodule Addict.Interactors.ResetPassword do
     {:error, [{:token, "Password reset token not valid."}]}
   end
 
-  defp validate_password(password, password_strategies \\ Addict.Configs.password_strategies) do
+  defp validate_password(password, password_strategies \\ Addict.Configs.password_strategies()) do
     %Addict.PasswordUser{}
     |> Ecto.Changeset.cast(%{password: password}, ~w(password)a, [])
     |> ValidatePassword.call(password_strategies)
@@ -86,5 +88,4 @@ defmodule Addict.Interactors.ResetPassword do
   defp _format_response({:ok, _} = response), do: response
   defp _format_response({:error, [password: {message, _}]}), do: {:error, [{:password, message}]}
   defp _format_response({:error, error}), do: {:error, error}
-
 end

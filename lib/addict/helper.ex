@@ -1,13 +1,13 @@
 defmodule Addict.Helper do
-@moduledoc """
-Addict Helper functions
-"""
+  @moduledoc """
+  Addict Helper functions
+  """
 
   @doc """
   Returns the current user in session in a Hash
   """
   def current_user(conn) do
-    conn |> Plug.Conn.fetch_session |> Plug.Conn.get_session(:current_user)
+    conn |> Plug.Conn.fetch_session() |> Plug.Conn.get_session(:current_user)
   end
 
   @doc """
@@ -28,14 +28,14 @@ Addict Helper functions
   end
 
   def exec({mod, func}, args) do
-    :erlang.apply mod, func, args
+    :erlang.apply(mod, func, args)
   end
 
   def exec(func, []) do
-    :erlang.apply func, []
+    :erlang.apply(func, [])
   end
 
   def exec(func, args) do
-    :erlang.apply func, args
+    :erlang.apply(func, args)
   end
 end
