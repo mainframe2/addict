@@ -28,7 +28,7 @@ defmodule Addict.Mixfile do
   defp deps do
     [
       {:plug_cowboy, "~> 2.1"},
-      {:phoenix, "~> 1.4"},
+      {:phoenix, "~> 1.4.10"},
       {:jason, "~> 1.0"},
       {:ecto_sql, "~> 3.2"},
       {:bcrypt_elixir, "~> 2.0"},
@@ -37,7 +37,7 @@ defmodule Addict.Mixfile do
       {:postgrex, ">= 0.0.0", only: :test},
       {:earmark, "~> 1.4", only: :dev},
       {:ex_doc, "~> 0.21", only: :dev},
-      {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.1", only: [:dev, :test], runtime: false}
     ]
   end
 
