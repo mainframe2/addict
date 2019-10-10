@@ -1,18 +1,27 @@
+defmodule TestAddictUser do
+  @moduledoc false
+
+  use Ecto.Schema
+
+  schema "users" do
+    field(:password, :string)
+    field(:email, :string)
+  end
+end
+
 defmodule RegisterTest do
-  # alias Addict.Interactors.ValidatePassword
+  @moduledoc false
+
+  alias Addict.Interactors.ValidatePassword
   use ExUnit.Case, async: true
 
   test "it passes on happy path" do
-    # changeset = %TestAddictUser{} |> Ecto.Changeset.cast(%{password: "one passphrase"}, ~w(password),[])
-    # %Ecto.Changeset{errors: errors, valid?: valid} = ValidatePassword.call(changeset, [])
-    # assert errors == []
-    # assert valid == true
+    changeset = %TestAddictUser{} |> Ecto.Changeset.cast(%{password: "one passphrase"}, ~w(password)a, [])
+    assert {:ok, []} = ValidatePassword.call(changeset, [])
   end
 
   test "it validates the default use case" do
-    # changeset = %TestAddictUser{} |> Ecto.Changeset.cast(%{password: "123"}, ~w(password),[])
-    # %Ecto.Changeset{errors: errors, valid?: valid} = ValidatePassword.call(changeset, [])
-    # assert errors == [password: "is too short"]
-    # assert valid == false
+    changeset = %TestAddictUser{} |> Ecto.Changeset.cast(%{password: "123"}, ~w(password)a, [])
+    assert {:error, [password: {"is too short", []}]} = ValidatePassword.call(changeset, [])
   end
 end

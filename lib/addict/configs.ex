@@ -1,4 +1,5 @@
 defmodule Addict.Configs do
+  @moduledoc false
   [
     :secret_key,
     :generate_csrf_token,
@@ -23,14 +24,14 @@ defmodule Addict.Configs do
     :reset_password_path,
     :repo,
     :password_reset_token_time_to_expiry
-  ] |> Enum.each(fn key ->
-         def unquote(key)() do
-          Application.get_env(:addict, unquote(key))
-         end
-       end)
+  ]
+  |> Enum.each(fn key ->
+    def unquote(key)() do
+      Application.get_env(:addict, unquote(key))
+    end
+  end)
 
   def password_hasher do
-    Application.get_env(:addict, :password_hasher, Comeonin.Pbkdf2)
+    Application.get_env(:addict, :password_hasher, Pbkdf2)
   end
-
 end

@@ -5,7 +5,7 @@ defmodule InjectHashTest do
   test "it injects the encrypted_password attribute" do
     params = %{"email" => "john.doe@example.com", "password" => "ma pass phrase"}
     encrypted_password = InjectHash.call(params)["encrypted_password"]
-    assert Comeonin.Pbkdf2.checkpw(params["password"], encrypted_password) == true
+    assert Pbkdf2.verify_pass(params["password"], encrypted_password) == true
   end
 
   test "it injects the encrypted_password attribute with custom hasher" do

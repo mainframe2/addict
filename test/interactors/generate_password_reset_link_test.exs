@@ -13,5 +13,4 @@ defmodule GeneratePasswordResetLinkTest do
     {:ok, result} = GeneratePasswordResetLink.call(user_id, "T01HLTEzMzctczNjcjM3NQ==", "/woooh")
     assert Regex.match?(~r/\/woooh\?token=.+&signature=./, result)
   end
-
 end

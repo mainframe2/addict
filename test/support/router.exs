@@ -3,11 +3,11 @@ defmodule TestAddictRouter do
   use Addict.RoutesHelper
 
   pipeline :addict_api_test do
-    plug :accepts, ["json"]
-    plug :fetch_session
+    plug(:accepts, ["json"])
+    plug(:fetch_session)
   end
 
   scope "/" do
-    addict :routes
+    addict(:routes)
   end
 end

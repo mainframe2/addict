@@ -157,7 +157,7 @@ config :addict,
 
 # Password Hasher
 
-You can use the `password_hasher` configuration to specify a module to perform the encrypting and decrypting of passwords. The module must implement `hashpwsalt/1` and `checkpw/2`.
+You can use the `password_hasher` configuration to specify a module to perform the encrypting and decrypting of passwords. The module must implement `hash_pwd_salt/1` and `verify_pass/2`.
 
 # Password Reset Token Time to Expiry
 

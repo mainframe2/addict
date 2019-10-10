@@ -1,9 +1,10 @@
 defmodule Addict.Interactors.GetUserByEmail do
-  @doc """
+  @moduledoc """
   Gets user by e-mail.
   Returns `{:ok, user}` or `{:error, [authentication: "Incorrect e-mail/password"]}`
   """
-  def call(email, schema \\ Addict.Configs.user_schema, repo \\ Addict.Configs.repo) do
+
+  def call(email, schema \\ Addict.Configs.user_schema(), repo \\ Addict.Configs.repo()) do
     repo.get_by(schema, email: email) |> process_response
   end
 
@@ -14,5 +15,4 @@ defmodule Addict.Interactors.GetUserByEmail do
   defp process_response(user) do
     {:ok, user}
   end
-
 end

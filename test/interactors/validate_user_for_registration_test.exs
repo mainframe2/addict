@@ -11,7 +11,7 @@ defmodule ValidateUserForRegistrationTest do
   test "it validates the default params" do
     user_params = %{
       "password" => "one passphrase",
-      "email" => "bla@ble.com",
+      "email" => "bla@ble.com"
     }
 
     {status, errors} = ValidateUserForRegistration.call(user_params, ConfigsMock)
@@ -23,7 +23,7 @@ defmodule ValidateUserForRegistrationTest do
   test "it fails for invalid e-mail" do
     user_params = %{
       "password" => "one passphrase",
-      "email" => "clearlyinvalid.com",
+      "email" => "clearlyinvalid.com"
     }
 
     {status, errors} = ValidateUserForRegistration.call(user_params, ConfigsMock)
@@ -35,7 +35,7 @@ defmodule ValidateUserForRegistrationTest do
   test "it fails for invalid e-mail and invalid password" do
     user_params = %{
       "password" => "123",
-      "email" => "clearlyinvalid.com",
+      "email" => "clearlyinvalid.com"
     }
 
     {status, errors} = ValidateUserForRegistration.call(user_params, ConfigsMock)
@@ -51,5 +51,4 @@ defmodule ValidateUserForRegistrationTest do
     assert errors == [password: "can't be blank", email: "can't be blank"]
     assert status == :error
   end
-
 end
